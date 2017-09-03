@@ -70,9 +70,20 @@ fn main() {
         resp.read_to_end(&mut body)
             .expect("IO failure reading web request");
 
+        let ctype = resp.headers().get::<reqwest::header::ContentType>();
+
         if !do_post_check && body != prev_body {
             println!("Payload bodies differ, requesting target URL");
-            reqwest::get(&trigger_url).expect("Trigger URL failure");
+
+            let client = reqwest::Client::new().unwrap();
+            let mut req = client.post(&trigger_url).unwrap();
+            if let Some(ctype) = ctype {
+                req.header(ctype.clone());
+            }
+
+            req.body(body.clone());
+            client.execute(req.build()).expect("Failed to request trigger URL");
+
             do_post_check = true;
         } else {
             if verbose && !do_post_check {
