@@ -1,0 +1,7 @@
+[package]
+authors = ["Connie Hilarides <conni_h@outlook.com>"]
+name = "url-watcher"
+version = "0.1.0"
+
+[dependencies]
+reqwest = "0.7.3"
